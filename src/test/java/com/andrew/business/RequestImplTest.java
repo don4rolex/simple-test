@@ -4,10 +4,12 @@ import com.andrew.dto.User;
 import com.andrew.dto.UserPhoto;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrew
@@ -18,22 +20,36 @@ public class RequestImplTest {
 
   @BeforeClass
   public static void setup() {
-    sut = new RequestImpl();
+    var requestMock = Mockito.mock(Request.class);
+    sut = new RequestImpl(requestMock);
+
+    var userPhoto = new UserPhoto();
+    userPhoto.setUrl("www.dummyurl.com/dummyPhoto.png");
+
+    var user = new User();
+    user.setId("001");
+    user.setPhoto("dummyPhoto.png");
+
+    var userList = new ArrayList<User>();
+    userList.add(user);
+
+    when(requestMock.get("/users/001/photo")).thenReturn(userPhoto);
+    when(requestMock.get("/users")).thenReturn(userList);
   }
 
   @Test
   public void getUserPhoto() {
-    UserPhoto photo = sut.getUserPhoto("001");
-    assertEquals("/users/001/photo", photo.getUrl());
+    var photo = sut.getUserPhoto("001");
+    assertEquals("www.dummyurl.com/dummyPhoto.png", photo.getUrl());
   }
 
   @Test
   public void getUsers() {
-    List<User> userList = sut.getUsers();
-    assertEquals(10, userList.size());
+    var userList = sut.getUsers();
+    assertEquals(1, userList.size());
 
-    User user = userList.get(0);
+    var user = userList.get(0);
     assertEquals("001", user.getId());
-    assertEquals("/users/001/photo", user.getPhoto());
+    assertEquals("dummyPhoto.png", user.getPhoto());
   }
 }

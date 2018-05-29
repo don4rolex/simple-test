@@ -12,6 +12,10 @@ public class RequestImpl{
 
   private Request request;
 
+  public RequestImpl(Request request) {
+    this.request = request;
+  }
+
   public UserPhoto getUserPhoto(String userId) {
     return (UserPhoto) request.get("/users/" + userId + "/photo");
   }
